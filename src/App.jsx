@@ -1,8 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 
-const Home = () => <div className="pt-20 text-center">🏠 Home Page</div>;
 const Projects = () => (
   <div className="pt-20 text-center">💼 Projects Page</div>
 );
