@@ -1,10 +1,28 @@
 {
-  "brand": "Shedlin Venture",
-  "home": "Home",
   "projects": "Projects",
   "about": "About",
   "contact": "Contact",
   "welcome": "Welcome to Shedlin Venture!",
   "about_text": "We are a creative software company from Bangladesh.",
-  "contact_text": "Feel free to reach out to us anytime!"
+  "contact_text": "Feel free to reach out to us anytime!",
+
+  "hero_title": "Crafting Cinematic Stories",
+  "hero_subtitle": "A creative journey through lenses by Shedlin Venture",
+  "watch_showreel": "Watch Showreel",
+
+  "home": "Home",
+  "our_work": "Our Work",
+  "services": "Services",
+  "testimonials": "Testimonials",
+  "who_we_are": "Who We Are",
+  "hire_expert": "Hire Expert",
+  "featured_work": "Featured Work",
+  "latest_projects": "Latest Projects",
+  "clients": "Clients",
+  "our_news": "Our News",
+  "team": "Our Team",
+  "career": "Career",
+  "contact_us": "Contact Us",
+  "location": "Location",
+  "brand": "Shedlin Studios"
 }

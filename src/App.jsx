@@ -1,13 +1,19 @@
+// src/App.jsx
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 
 const Projects = () => (
-  <div className="pt-20 text-center">💼 Projects Page</div>
+  <div className="pt-20 text-center min-h-screen">💼 Projects Page</div>
 );
-const About = () => <div className="pt-20 text-center">👨‍💻 About Page</div>;
-const Contact = () => <div className="pt-20 text-center">📞 Contact Page</div>;
+
+const About = () => (
+  <div className="pt-20 text-center min-h-screen">👨‍💻 About Page</div>
+);
+const Contact = () => (
+  <div className="pt-20 text-center min-h-screen">📞 Contact Page</div>
+);
 
 const App = () => {
   return (
