@@ -1,19 +1,34 @@
-/* eslint-disable no-unused-vars */
 // src/pages/Home.jsx
 import React from "react";
-import { useTranslation } from "react-i18next";
 import Hero from "../components/Hero";
-import ProjectShowcase from "../components/ProjectShowcase";
-import Services from "../components/Services";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Home = () => {
-  const { t } = useTranslation();
+  const { getThemeClass } = useTheme();
 
   return (
-    <div>
+    <div
+      className={`min-h-screen ${getThemeClass(
+        "bg-white text-gray-900",
+        "bg-gray-900 text-white"
+      )}`}
+    >
       <Hero />
-      <ProjectShowcase />
-      <Services />
+      {/* Other sections */}
+      <section
+        className={`py-20 ${getThemeClass("bg-gray-50", "bg-gray-800")}`}
+      >
+        <div className="container mx-auto px-6">
+          <h2
+            className={`text-3xl font-bold text-center ${getThemeClass(
+              "text-gray-800",
+              "text-white"
+            )}`}
+          >
+            Our Services
+          </h2>
+        </div>
+      </section>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 const Projects = () => (
   <div className="pt-20 text-center min-h-screen">💼 Projects Page</div>
@@ -11,13 +12,14 @@ const Projects = () => (
 const About = () => (
   <div className="pt-20 text-center min-h-screen">👨‍💻 About Page</div>
 );
+
 const Contact = () => (
   <div className="pt-20 text-center min-h-screen">📞 Contact Page</div>
 );
 
 const App = () => {
   return (
-    <>
+    <ThemeProvider>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -25,7 +27,7 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
-    </>
+    </ThemeProvider>
   );
 };
 
