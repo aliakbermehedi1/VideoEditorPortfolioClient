@@ -18,7 +18,7 @@ const Home = () => {
       <section
         className={`py-20 ${getThemeClass("bg-gray-50", "bg-gray-800")}`}
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-6 mb-96">
           <h2
             className={`text-3xl font-bold text-center ${getThemeClass(
               "text-gray-800",
