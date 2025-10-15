@@ -28,6 +28,12 @@ const Home = () => {
             Our Services
           </h2>
         </div>
+
+
+        <div className="pb-96"></div>
+        <div className="pb-96"></div>
+        <div className="pb-96"></div>
+        <div className="pb-96"></div>
       </section>
     </div>
   );
