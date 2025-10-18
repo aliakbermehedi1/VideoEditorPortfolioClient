@@ -184,7 +184,7 @@ const Hero = () => {
               </div>
 
               {/* Main Heading */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
                   <span className="text-white/90">Creating</span>
                   <br />
@@ -201,7 +201,7 @@ const Hero = () => {
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex flex-wrap gap-4 pt-2">
                 <button
                   onClick={() => playVideo(VIDEOS[activeIndex], activeIndex)}
                   className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/40 hover:scale-105"
@@ -238,7 +238,7 @@ const Hero = () => {
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-8 pt-8 border-t border-white/5">
+              <div className="flex items-center gap-8 pt-3 border-t border-white/5">
                 <div>
                   <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     50+
