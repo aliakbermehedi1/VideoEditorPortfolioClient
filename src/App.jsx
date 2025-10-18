@@ -3,6 +3,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ScrollToTop from "./components/ScrollToTop";
+import TawkToChat from "./components/TawkToChat";
 import Home from "./pages/Home";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProjectShowcase from "./components/ProjectShowcase";
@@ -60,7 +61,8 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
-        <ScrollToTop />
+        {/* <ScrollToTop /> */}
+        <TawkToChat />
       </div>
     </ThemeProvider>
   );
