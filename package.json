@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "antd": "^5.27.5",
     "gsap": "^3.13.0",
     "i18next": "^25.5.3",
     "react": "^19.1.1",

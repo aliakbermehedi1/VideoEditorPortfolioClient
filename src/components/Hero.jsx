@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Modal } from "antd";
+// import "antd/dist/reset.css";
+
 import { useTheme } from "../contexts/ThemeContext";
 
 const VIDEOS = [
@@ -12,17 +15,15 @@ const VIDEOS = [
 const Hero = () => {
   const { getThemeClass } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [playingVideo, setPlayingVideo] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
   const playerRef = useRef(null);
   const autoPlayRef = useRef(null);
-  const modalRef = useRef(null);
 
   // Auto-play carousel
   useEffect(() => {
-    if (!isPlaying && !isModalVisible) {
+    if (!isModalOpen) {
       autoPlayRef.current = setInterval(() => {
         setActiveIndex((prev) => (prev + 1) % VIDEOS.length);
       }, 4000);
@@ -33,7 +34,7 @@ const Hero = () => {
         clearInterval(autoPlayRef.current);
       }
     };
-  }, [isPlaying, isModalVisible]);
+  }, [isModalOpen]);
 
   // Navigate carousel
   const navigate = (direction) => {
@@ -44,12 +45,12 @@ const Hero = () => {
     }
   };
 
-  // Play video
+  // Open modal and play video
   const playVideo = (video, index) => {
     setActiveIndex(index);
     setPlayingVideo(video);
-    setIsModalVisible(true);
-    setIsClosing(false);
+    setIsModalOpen(true);
+    setIsPlayerReady(false);
 
     // Clear autoplay when modal opens
     if (autoPlayRef.current) {
@@ -57,34 +58,32 @@ const Hero = () => {
     }
   };
 
-  // Close video with animation
-  const closeVideo = () => {
-    setIsClosing(true);
-    setIsPlaying(false);
-
-    setTimeout(() => {
-      setIsModalVisible(false);
-      if (playerRef.current && playerRef.current.destroy) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
-      setPlayingVideo(null);
-      setIsClosing(false);
-    }, 300);
+  // Close modal
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setIsPlayerReady(false);
+    
+    // Destroy YouTube player
+    if (playerRef.current && playerRef.current.destroy) {
+      playerRef.current.destroy();
+      playerRef.current = null;
+    }
+    
+    setPlayingVideo(null);
   };
 
-  // Initialize YouTube player when modal becomes visible
+  // Initialize YouTube player when modal opens
   useEffect(() => {
-    if (isModalVisible && playingVideo && !isClosing) {
-      const timer = setTimeout(() => {
-        setIsPlaying(true);
-
+    if (isModalOpen && playingVideo) {
+      const initPlayer = () => {
         if (window.YT && window.YT.Player) {
           if (playerRef.current && playerRef.current.destroy) {
             playerRef.current.destroy();
           }
 
-          playerRef.current = new window.YT.Player("yt-player", {
+          playerRef.current = new window.YT.Player("yt-player-antd", {
+            height: "100%",
+            width: "100%",
             videoId: playingVideo.id,
             playerVars: {
               autoplay: 1,
@@ -95,36 +94,48 @@ const Hero = () => {
               iv_load_policy: 3,
             },
             events: {
+              onReady: (event) => {
+                console.log("Player ready");
+                setIsPlayerReady(true);
+                event.target.playVideo();
+              },
               onStateChange: (event) => {
                 if (event.data === window.YT.PlayerState.ENDED) {
-                  // Auto-close when video ends
-                  setTimeout(closeVideo, 2000);
+                  setTimeout(handleModalClose, 2000);
                 }
               },
             },
           });
+        } else {
+          // Retry if API not ready
+          setTimeout(initPlayer, 100);
         }
-      }, 400);
+      };
 
+      const timer = setTimeout(initPlayer, 500);
       return () => clearTimeout(timer);
     }
-  }, [isModalVisible, playingVideo, isClosing]);
+  }, [isModalOpen, playingVideo]);
 
   // Load YouTube API
   useEffect(() => {
     if (!window.YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      
+      // Set up callback for when API is ready
+      window.onYouTubeIframeAPIReady = () => {
+        console.log("YouTube API Ready");
+      };
     }
   }, []);
 
   // Keyboard controls
   useEffect(() => {
     const handleKeyPress = (e) => {
-      if (isModalVisible && e.key === "Escape") {
-        closeVideo();
-      } else if (!isModalVisible) {
+      if (!isModalOpen) {
         if (e.key === "ArrowLeft") navigate("prev");
         if (e.key === "ArrowRight") navigate("next");
       }
@@ -132,23 +143,7 @@ const Hero = () => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isModalVisible]);
-
-  // Close modal when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target) &&
-        isModalVisible
-      ) {
-        closeVideo();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isModalVisible]);
+  }, [isModalOpen]);
 
   return (
     <div
@@ -558,38 +553,55 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Enhanced Video Dialog/Modal */}
-      {isModalVisible && (
-        <div
-          className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-500 ${
-            isClosing
-              ? "bg-black/0 backdrop-blur-0"
-              : "bg-black/90 backdrop-blur-xl"
-          }`}
-          style={{
-            animation: isClosing ? "none" : "fadeIn 0.5s ease-out",
-          }}
-        >
-          <div
-            ref={modalRef}
-            className={`relative w-full max-w-6xl mx-auto transition-all duration-500 ${
-              isClosing
-                ? "opacity-0 scale-95 translate-y-8"
-                : "opacity-100 scale-100 translate-y-0"
-            }`}
-            style={{
-              animation: isClosing
-                ? "none"
-                : "modalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-            }}
-          >
-            {/* Enhanced Close button */}
-            <button
-              onClick={closeVideo}
-              className="absolute -top-4 -right-4 z-50 w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center text-white hover:scale-110 hover:shadow-2xl hover:shadow-red-500/50 transition-all duration-300 group shadow-xl border border-red-400/30"
+      {/* Ant Design Modal */}
+      <Modal
+        open={isModalOpen}
+        onCancel={handleModalClose}
+        footer={null}
+        width={600}
+        centered
+        closeIcon={
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-xl">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        }
+        styles={{
+          mask: { backdropFilter: "blur(8px)" },
+          content: {
+             background:  `${getThemeClass(
+                      "linear-gradient(to bottom right, #4f177b, #7b1b6c)",
+                      "linear-gradient(to bottom right, #0f172a, #1e1b4b)"
+                    )}`, // or any light fallback
+            padding: "32px",
+            borderRadius: "24px",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+          },
+        }}
+      >
+        {/* Modal Header */}
+        <div className="mb-6 text-center space-y-3">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            {playingVideo?.title}
+          </h2>
+          <div className="flex items-center justify-center gap-4">
+            <span className="px-4 py-2 bg-blue-500/20 backdrop-blur-sm border border-blue-500/30 rounded-full text-sm font-medium text-blue-300">
+              {playingVideo?.category}
+            </span>
+            <span className="text-slate-400 text-sm flex items-center gap-2">
               <svg
-                className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -597,134 +609,79 @@ const Hero = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M6 18L18 6M6 6l12 12"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                 />
               </svg>
-            </button>
-
-            {/* Dialog Header */}
-            <div className="mb-6 text-center space-y-3">
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                {playingVideo?.title}
-              </h2>
-              <div className="flex items-center justify-center gap-4">
-                <span className="px-4 py-2 bg-blue-500/20 backdrop-blur-sm border border-blue-500/30 rounded-full text-sm font-medium text-blue-300">
-                  {playingVideo?.category}
-                </span>
-                <span className="text-slate-400 text-sm flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                  Press ESC to close
-                </span>
-              </div>
-            </div>
-
-            {/* Video Container with Enhanced Styling */}
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-black ring-2 ring-white/10 ring-inset">
-              <div
-                className="relative w-full"
-                style={{ paddingBottom: "56.25%" }}
-              >
-                {/* Loading State */}
-                {!isPlaying && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
-                    <div className="text-center space-y-4">
-                      <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                      <p className="text-slate-400 font-medium">
-                        Loading video...
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* YouTube Player */}
-                <div
-                  id="yt-player"
-                  className={`absolute inset-0 transition-opacity duration-500 ${
-                    isPlaying ? "opacity-100" : "opacity-0"
-                  }`}
-                ></div>
-              </div>
-
-              {/* Gradient Border Effect */}
-              <div className="absolute inset-0 rounded-3xl pointer-events-none border-2 border-transparent bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-50"></div>
-            </div>
-
-            {/* Video Controls Info */}
-            <div className="mt-6 flex items-center justify-between text-slate-400 text-sm">
-              <div className="flex items-center gap-6">
-                <span className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Click video for controls
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                <span>Video ready</span>
-              </div>
-            </div>
+              Press ESC to close
+            </span>
           </div>
         </div>
-      )}
 
-      {/* Add CSS animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
+        {/* Video Container */}
+        <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black ring-2 ring-white/10">
+          <div
+            className="relative w-full bg-black"
+            style={{ paddingBottom: "56.25%" }}
+          >
+            {/* Loading State */}
+            {!isPlayerReady && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <p className="text-slate-400 font-medium">
+                    Loading video...
+                  </p>
+                </div>
+              </div>
+            )}
 
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: scale(0.9) translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-      `}</style>
+            {/* YouTube Player Container */}
+            <div
+              id="yt-player-antd"
+              className="absolute inset-0 w-full h-full"
+            ></div>
+          </div>
+        </div>
+
+        {/* Video Info Footer */}
+        <div className="mt-6 flex items-center justify-between text-slate-400 text-sm">
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-2">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Click video for controls
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            <span>Video ready</span>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
