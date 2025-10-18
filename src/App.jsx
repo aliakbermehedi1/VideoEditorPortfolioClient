@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import ProjectShowcase from "./components/ProjectShowcase";
 
 const Projects = () => (
   <div className="pt-20 text-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
@@ -55,7 +56,7 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<Projects />} />
+          <Route path="/projects" element={<ProjectShowcase />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
