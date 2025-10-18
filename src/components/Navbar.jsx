@@ -71,23 +71,21 @@ const Navbar = () => {
 
   // Compact navigation data
   const mainNav = [
-    { name: t("home"), path: "/", icon: "🏠", key: "home" },
+    { name: t("home"), path: "/", key: "home" },
     {
       name: t("services"),
       path: "/services",
       hasMega: true,
-      icon: "⚡",
       key: "services",
     },
     {
       name: t("our_work"),
       path: "/showcase",
       hasMega: true,
-      icon: "🎬",
       key: "showcase",
     },
-    { name: t("who_we_are"), path: "/about", icon: "👥", key: "about" },
-    { name: t("contact"), path: "/contact", icon: "📞", key: "contact" },
+    { name: t("who_we_are"), path: "/about", key: "about" },
+    { name: t("contact"), path: "/contact", key: "contact" },
   ];
 
   // Compact language options
@@ -663,9 +661,6 @@ const Navbar = () => {
                       : "text-gray-700 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-600"
                   }`}
                 >
-                  <span className="text-base transition-transform duration-200 group-hover:scale-110">
-                    {item.icon}
-                  </span>
                   <span>{item.name}</span>
                 </Link>
               ))}

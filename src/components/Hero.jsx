@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTheme } from "../contexts/ThemeContext";
 
 const VIDEOS = [
   { id: "yqaLSlPOUxM", title: "Epic Cinematic", category: "Action" },
@@ -9,6 +10,7 @@ const VIDEOS = [
 ];
 
 const Hero = () => {
+  const { getThemeClass } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playingVideo, setPlayingVideo] = useState(null);
@@ -149,10 +151,18 @@ const Hero = () => {
   }, [isModalVisible]);
 
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 overflow-hidden">
+    <div
+      className={`relative w-full min-h-screen overflow-hidden ${getThemeClass(
+        "bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100",
+        "bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900"
+      )}`}
+    >
       {/* Subtle grid background */}
       <div
-        className="absolute inset-0 opacity-10"
+        className={`absolute inset-0 ${getThemeClass(
+          "opacity-5",
+          "opacity-10"
+        )}`}
         style={{
           backgroundImage:
             "linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px)",
@@ -161,9 +171,17 @@ const Hero = () => {
       ></div>
 
       {/* Animated glow orbs */}
-      <div className="absolute top-20 left-20 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
       <div
-        className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]"
+        className={`absolute top-20 left-20 w-[500px] h-[500px] rounded-full blur-[120px] animate-pulse ${getThemeClass(
+          "bg-blue-300/20",
+          "bg-blue-500/10"
+        )}`}
+      ></div>
+      <div
+        className={`absolute bottom-20 right-20 w-[500px] h-[500px] rounded-full blur-[120px] ${getThemeClass(
+          "bg-purple-300/20",
+          "bg-purple-500/10"
+        )}`}
         style={{
           animation: "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
           animationDelay: "2s",
@@ -173,12 +191,27 @@ const Hero = () => {
       <div className="relative z-10 w-full min-h-screen flex items-center">
         <div className="w-full max-w-[1400px] mx-auto px-8 lg:px-12">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content - unchanged */}
+            {/* Left Content */}
             <div className="space-y-8 lg:pr-12">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/20 rounded-full backdrop-blur-sm">
-                <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
-                <span className="text-blue-300 text-sm font-medium">
+              <div
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm ${getThemeClass(
+                  "bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-300/50",
+                  "bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/20"
+                )}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full animate-pulse ${getThemeClass(
+                    "bg-blue-600",
+                    "bg-blue-400"
+                  )}`}
+                ></div>
+                <span
+                  className={`text-sm font-medium ${getThemeClass(
+                    "text-blue-700",
+                    "text-blue-300"
+                  )}`}
+                >
                   Visual Storyteller
                 </span>
               </div>
@@ -186,16 +219,30 @@ const Hero = () => {
               {/* Main Heading */}
               <div className="space-y-2">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
-                  <span className="text-white/90">Creating</span>
+                  <span
+                    className={getThemeClass("text-gray-800", "text-white/90")}
+                  >
+                    Creating
+                  </span>
                   <br />
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  <span
+                    className={getThemeClass(
+                      "bg-gradient-to-r from-blue-800 via-purple-400 to-pink-600 bg-clip-text text-transparent",
+                      "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+                    )}
+                  >
                     Cinematic Magic
                   </span>
                 </h1>
               </div>
 
               {/* Description */}
-              <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-xl">
+              <p
+                className={`text-lg md:text-xl leading-relaxed max-w-xl ${getThemeClass(
+                  "text-slate-600",
+                  "text-slate-400"
+                )}`}
+              >
                 Transforming ideas into captivating visual experiences through
                 expert editing, color grading, and storytelling.
               </p>
@@ -219,7 +266,12 @@ const Hero = () => {
                   </span>
                 </button>
 
-                <button className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 flex items-center gap-2">
+                <button
+                  className={`px-8 py-4 backdrop-blur-sm rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${getThemeClass(
+                    "bg-slate-200/80 border border-slate-300 text-gray-800 hover:bg-slate-300/90 hover:border-slate-400",
+                    "bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20"
+                  )}`}
+                >
                   View All Projects
                   <svg
                     className="w-4 h-4"
@@ -238,31 +290,82 @@ const Hero = () => {
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-8 pt-3 border-t border-white/5">
+              <div
+                className={`flex items-center gap-8 pt-3 border-t ${getThemeClass(
+                  "border-blue-400",
+                  "border-white/5"
+                )}`}
+              >
                 <div>
-                  <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  <div
+                    className={getThemeClass(
+                      "text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent",
+                      "text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+                    )}
+                  >
                     50+
                   </div>
-                  <div className="text-sm text-slate-500 mt-1">Projects</div>
+                  <div
+                    className={`text-sm mt-1 ${getThemeClass(
+                      "text-slate-500",
+                      "text-slate-500"
+                    )}`}
+                  >
+                    Projects
+                  </div>
                 </div>
-                <div className="w-px h-12 bg-white/10"></div>
+                <div
+                  className={`w-px h-12 ${getThemeClass(
+                    "bg-blue-300",
+                    "bg-white/10"
+                  )}`}
+                ></div>
                 <div>
-                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  <div
+                    className={getThemeClass(
+                      "text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent",
+                      "text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+                    )}
+                  >
                     25+
                   </div>
-                  <div className="text-sm text-slate-500 mt-1">Clients</div>
+                  <div
+                    className={`text-sm mt-1 ${getThemeClass(
+                      "text-slate-500",
+                      "text-slate-500"
+                    )}`}
+                  >
+                    Clients
+                  </div>
                 </div>
-                <div className="w-px h-12 bg-white/10"></div>
+                <div
+                  className={`w-px h-12 ${getThemeClass(
+                    "bg-blue-300",
+                    "bg-white/10"
+                  )}`}
+                ></div>
                 <div>
-                  <div className="text-4xl font-bold bg-gradient-to-r from-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  <div
+                    className={getThemeClass(
+                      "text-4xl font-bold bg-gradient-to-r from-pink-600 to-blue-600 bg-clip-text text-transparent",
+                      "text-4xl font-bold bg-gradient-to-r from-pink-400 to-blue-400 bg-clip-text text-transparent"
+                    )}
+                  >
                     5+
                   </div>
-                  <div className="text-sm text-slate-500 mt-1">Years</div>
+                  <div
+                    className={`text-sm mt-1 ${getThemeClass(
+                      "text-slate-500",
+                      "text-slate-500"
+                    )}`}
+                  >
+                    Years
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right - Modern Card Carousel - unchanged */}
+            {/* Right - Modern Card Carousel */}
             <div className="relative h-[600px] flex items-center justify-center">
               <div className="relative w-full max-w-[600px] h-full flex items-center">
                 {/* Cards Stack */}
@@ -300,7 +403,10 @@ const Hero = () => {
                         onClick={() => playVideo(video, index)}
                       >
                         <div
-                          className={`relative w-[400px] h-[260px] rounded-2xl overflow-hidden bg-slate-900 shadow-2xl ${
+                          className={`relative w-[400px] h-[260px] rounded-2xl overflow-hidden shadow-2xl ${getThemeClass(
+                            "bg-slate-200",
+                            "bg-slate-900"
+                          )} ${
                             isActive
                               ? "ring-2 ring-blue-400/50 shadow-blue-500/30"
                               : ""
@@ -362,7 +468,10 @@ const Hero = () => {
                 {/* Navigation arrows */}
                 <button
                   onClick={() => navigate("prev")}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all duration-300 shadow-xl"
+                  className={`absolute left-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl ${getThemeClass(
+                    "bg-white/80 border border-slate-200 text-gray-800 hover:bg-white hover:scale-110",
+                    "bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:scale-110"
+                  )}`}
                 >
                   <svg
                     className="w-6 h-6"
@@ -381,7 +490,10 @@ const Hero = () => {
 
                 <button
                   onClick={() => navigate("next")}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all duration-300 shadow-xl"
+                  className={`absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl ${getThemeClass(
+                    "bg-white/80 border border-slate-200 text-gray-800 hover:bg-white hover:scale-110",
+                    "bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:scale-110"
+                  )}`}
                 >
                   <svg
                     className="w-6 h-6"
@@ -407,7 +519,10 @@ const Hero = () => {
                       className={`transition-all duration-300 rounded-full ${
                         index === activeIndex
                           ? "w-10 h-2.5 bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg shadow-blue-500/50"
-                          : "w-2.5 h-2.5 bg-white/30 hover:bg-white/50"
+                          : getThemeClass(
+                              "w-2.5 h-2.5 bg-slate-400 hover:bg-slate-600",
+                              "w-2.5 h-2.5 bg-white/30 hover:bg-white/50"
+                            )
                       }`}
                     />
                   ))}
@@ -415,7 +530,12 @@ const Hero = () => {
 
                 {/* Hint text */}
                 <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 text-center">
-                  <p className="text-slate-500 text-sm flex items-center gap-2">
+                  <p
+                    className={`text-sm flex items-center gap-2 ${getThemeClass(
+                      "text-slate-500",
+                      "text-slate-500"
+                    )}`}
+                  >
                     <svg
                       className="w-4 h-4"
                       fill="none"
